@@ -16,5 +16,5 @@ Requires [`nix`](https://nixos.org)
 
 There are no automated tests.
 
-The `shell.nix` should include every defined derivation so that `nix-shell` can act as our user
-testing.
+The `tests/shell.nix` should include every defined derivation so that `nix-shell` can act as our
+user testing.
