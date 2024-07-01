@@ -57,7 +57,7 @@ self: super: {
   holochain_0-4-x = self.holochain_0-4-0-dev-10;
   holochain_0-4 = self.createSymlink self.holochain_0-4-x "holochain-0.4";
 
-  holochain_0-x = self.holochain_0-4-x;
+  holochain_0-x = self.holochain_0-3-x;
   holochain_0 = self.createSymlink self.holochain_0-x "holochain-0";
 
   holochain_x = self.holochain_0-x;
@@ -87,7 +87,7 @@ self: super: {
   hc_0-3-0-beta-dev-47 = super.callPackage ./hc/default.nix { version = "0.3.0-beta-dev.47"; sha256 = "ctkBtXog3+HF2pfpYMiyLhApptwGevD0ve17RSKfttA="; };
   hc_0-3-1 = super.callPackage ./hc/default.nix { version = "0.3.1"; sha256 = "6zccpmpOBisxd3REzEfM58iZgiFZ3H5NvWdtYKrAC3k="; };
 
-  hc_0-3-x = self.hc_0-3-0-beta-dev-47;
+  hc_0-3-x = self.hc_0-3-1;
   hc_0-3 = self.createSymlink self.hc_0-3-x "hc-0.3";
 
   hc_0-4-0-dev-0 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.0"; sha256 = "vQSeazkmySI4sSVy2EGi60LUtv1uyYdg3/TfsKVYei0="; };
@@ -105,7 +105,7 @@ self: super: {
   hc_0-4-x = self.hc_0-4-0-dev-10;
   hc_0-4 = self.createSymlink self.hc_0-4-x "hc-0.4";
 
-  hc_0-x = self.hc_0-4-x;
+  hc_0-x = self.hc_0-3-x;
   hc_0 = self.createSymlink self.hc_0-x "hc-0";
 
   hc_x = self.hc_0-x;
