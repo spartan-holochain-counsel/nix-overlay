@@ -24,15 +24,17 @@ follow the instructions [here](https://nixos.org/download.html).
 
 Once you have Nix installed, you can use this overlay as your package source.
 
-There are 2 example nix configurations
+There are 3 example nix configurations
 
 1. `pkgs.nix` + `shell.nix`
 2. `pkgs.nix` + `default.nix`
+3. `pkgs.nix` + `flake.nix`
 
-Either configuration will enable the `nix-shell` command to work.
+Configuration #1 and #2 are used by the `nix-shell` command while #3 is used by the `nix develop`
+command.
 
 
-### Example `pkgs.nix`
+#### Example `pkgs.nix`
 
 ```nix
 { pkgs ? import <nixpkgs> {} }:
@@ -40,21 +42,21 @@ Either configuration will enable the `nix-shell` command to work.
 import (pkgs.fetchFromGitHub {
   owner = "spartan-holochain-counsel";
   repo = "nix-overlay";
-  rev = "84d4ca0d7808ed7999854ba7ef5eac5951dc08ef";
-  sha256 = "cCJaO09D1r//Knhohv8nFAmUQqBJQ4TOHrysoM7WAz4=";
-})
+  rev = "47a7487ad44855a1202ecd4bbf920a54dc548b8b";
+  sha256 = "LASo8WXV4Mxcku73lOia2HUefSLxTwQK+Im42iPO3Cw=";
+}) {}
 ```
 
 or, a more condensed version using `fetchTarball`
 
 ```nix
 import (fetchTarball {
-  url = "https://github.com/spartan-holochain-counsel/nix-overlay/archive/84d4ca0d7808ed7999854ba7ef5eac5951dc08ef.tar.gz";
-  sha256 = "cCJaO09D1r//Knhohv8nFAmUQqBJQ4TOHrysoM7WAz4=";
-})
+  url = "https://github.com/spartan-holochain-counsel/nix-overlay/archive/47a7487ad44855a1202ecd4bbf920a54dc548b8b.tar.gz";
+  sha256 = "LASo8WXV4Mxcku73lOia2HUefSLxTwQK+Im42iPO3Cw=";
+}) {}
 ```
 
-### Example `shell.nix`
+#### Example `shell.nix`
 
 ```nix
 { pkgs ? import ./pkgs.nix {} }:
@@ -70,7 +72,7 @@ mkShell {
 }
 ```
 
-### Example `default.nix`
+#### Example `default.nix`
 
 ```nix
 { pkgs ? import ./pkgs.nix {} }:
@@ -86,6 +88,61 @@ stdenv.mkDerivation {
     lair-keystore
     hc
   ];
+}
+```
+
+### Flake Support
+
+Flakes are more strict and so we need to modify the previous `pkgs.nix` so that:
+
+- `<nixpkgs>` is not used
+- `system` is explicitly provided
+
+```nix
+{ pkgs, system }:
+
+import (pkgs.fetchFromGitHub {
+  owner = "spartan-holochain-counsel";
+  repo = "nix-overlay";
+  rev = "47a7487ad44855a1202ecd4bbf920a54dc548b8b";
+  sha256 = "LASo8WXV4Mxcku73lOia2HUefSLxTwQK+Im42iPO3Cw=";
+}) {
+  inherit pkgs;
+  inherit system;
+}
+```
+
+
+#### Example `flake.nix`
+
+```nix
+{
+  description = "Flake for Holochain development environment";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  };
+
+  outputs = { self, nixpkgs }:
+    let
+      system = "x86_64-linux";
+      pkgs = import ./pkgs.nix {
+        pkgs = nixpkgs.legacyPackages.${system};
+        inherit system;
+      };
+    in
+    {
+      devShells.${system} = {
+        default = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            holochain
+            lair-keystore
+            hc
+            nodejs_22
+          ];
+        };
+      };
+    };
 }
 ```
 
