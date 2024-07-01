@@ -42,8 +42,8 @@ command.
 import (pkgs.fetchFromGitHub {
   owner = "spartan-holochain-counsel";
   repo = "nix-overlay";
-  rev = "47a7487ad44855a1202ecd4bbf920a54dc548b8b";
-  sha256 = "LASo8WXV4Mxcku73lOia2HUefSLxTwQK+Im42iPO3Cw=";
+  rev = "b12037ca0ac4fde1d4049ba40c6e375c5e156e9a";
+  sha256 = "Ou5Xs2r90f/+OsH3Y6mrnzeQ5aUNxLg1G1GGniK3f3o=";
 }) {}
 ```
 
@@ -51,8 +51,8 @@ or, a more condensed version using `fetchTarball`
 
 ```nix
 import (fetchTarball {
-  url = "https://github.com/spartan-holochain-counsel/nix-overlay/archive/47a7487ad44855a1202ecd4bbf920a54dc548b8b.tar.gz";
-  sha256 = "LASo8WXV4Mxcku73lOia2HUefSLxTwQK+Im42iPO3Cw=";
+  url = "https://github.com/spartan-holochain-counsel/nix-overlay/archive/b12037ca0ac4fde1d4049ba40c6e375c5e156e9a.tar.gz";
+  sha256 = "Ou5Xs2r90f/+OsH3Y6mrnzeQ5aUNxLg1G1GGniK3f3o=";
 }) {}
 ```
 
@@ -104,8 +104,8 @@ Flakes are more strict and so we need to modify the previous `pkgs.nix` so that:
 import (pkgs.fetchFromGitHub {
   owner = "spartan-holochain-counsel";
   repo = "nix-overlay";
-  rev = "47a7487ad44855a1202ecd4bbf920a54dc548b8b";
-  sha256 = "LASo8WXV4Mxcku73lOia2HUefSLxTwQK+Im42iPO3Cw=";
+  rev = "b12037ca0ac4fde1d4049ba40c6e375c5e156e9a";
+  sha256 = "Ou5Xs2r90f/+OsH3Y6mrnzeQ5aUNxLg1G1GGniK3f3o=";
 }) {
   inherit pkgs;
   inherit system;
