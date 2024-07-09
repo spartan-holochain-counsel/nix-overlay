@@ -4,6 +4,8 @@ self: super: {
   # Helper function to create symbolic links
   createSymlink = pkg: alias: super.runCommand "symlink-${alias}" {} ''
     mkdir -p $out/bin
+    ln -s ${pkg}/bin/${pkg.pname} $out/bin/${pkg.pname}
+    ln -s ${pkg}/bin/${pkg.pname}-${pkg.version} $out/bin/${pkg.pname}-${pkg.version}
     ln -s ${pkg}/bin/${pkg.pname}-${pkg.version} $out/bin/${alias}
   '';
 
