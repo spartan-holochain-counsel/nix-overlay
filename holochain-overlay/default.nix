@@ -6,7 +6,7 @@ self: super: {
     mkdir -p $out/bin
     ln -s ${pkg}/bin/${pkg.pname} $out/bin/${pkg.pname}
     ln -s ${pkg}/bin/${pkg.pname}-${pkg.version} $out/bin/${pkg.pname}-${pkg.version}
-    ln -s ${pkg}/bin/${pkg.pname}-${pkg.version} $out/bin/${alias}
+    ln -fs ${pkg}/bin/${pkg.pname}-${pkg.version} $out/bin/${alias}
   '';
 
   holochain_0-1-8 = super.callPackage ./holochain/default.nix { version = "0.1.8"; sha256 = "HVJ6SItgOj2fkGAOsbzS5d/+4yau+xIyTxl/59Ela8s="; };
@@ -55,8 +55,10 @@ self: super: {
   holochain_0-4-0-dev-8 = super.callPackage ./holochain/default.nix { version = "0.4.0-dev.8"; sha256 = "puFkAsU3yt5Il2q03D/FHezE8T8qHjjZ6MFx69G7TRk="; };
   holochain_0-4-0-dev-9 = super.callPackage ./holochain/default.nix { version = "0.4.0-dev.9"; sha256 = "CSrFxHr39zoa+NFTVRAV0M8glVfEvEmJv3SByR7gqHA="; };
   holochain_0-4-0-dev-10 = super.callPackage ./holochain/default.nix { version = "0.4.0-dev.10"; sha256 = "POl+Zu3QhI6LB3PN1bUVVKo1A0FiLSzCc8gX9Jwb/7M="; };
+  holochain_0-4-0-dev-11 = super.callPackage ./holochain/default.nix { version = "0.4.0-dev.11"; sha256 = "ncS9Drru8qNcAt/KmW18CAnAiHYfwdcaiE2qAOseNIc="; };
+  holochain_0-4-0-dev-12 = super.callPackage ./holochain/default.nix { version = "0.4.0-dev.12"; sha256 = "jQtswjO7d1nzaexr09ygmKGscXj9IRFJqXFQgnqFqPc="; };
 
-  holochain_0-4-x = self.holochain_0-4-0-dev-10;
+  holochain_0-4-x = self.holochain_0-4-0-dev-12;
   holochain_0-4 = self.createSymlink self.holochain_0-4-x "holochain-0.4";
 
   holochain_0-x = self.holochain_0-3-x;
@@ -103,8 +105,10 @@ self: super: {
   hc_0-4-0-dev-8 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.8"; sha256 = "6AItiC2kM8bGYmrm5C1EHlIP9tVYFB3oiiVVJt5FKJE="; };
   hc_0-4-0-dev-9 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.9"; sha256 = "usxUMqHF3Onr9YQ6bSvjYs2f+NiQ2mEeRmE81tIGhWQ="; };
   hc_0-4-0-dev-10 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.10"; sha256 = "iFPxtUYPw3qw6DcQNd2kUPko2bWqKHqZe7eQvYkAukg="; };
+  hc_0-4-0-dev-11 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.11"; sha256 = "7AWGvEYRA7MuEzXbCbxIY3HSDFJmxiq2wMUqoXDruaM="; };
+  hc_0-4-0-dev-12 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.12"; sha256 = "iWrApgqni5S+tI9SpPxbIJw5EdIQrzX/xM+50jOk/4k="; };
 
-  hc_0-4-x = self.hc_0-4-0-dev-10;
+  hc_0-4-x = self.hc_0-4-0-dev-12;
   hc_0-4 = self.createSymlink self.hc_0-4-x "hc-0.4";
 
   hc_0-x = self.hc_0-3-x;

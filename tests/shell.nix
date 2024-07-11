@@ -51,6 +51,8 @@ mkShell {
     holochain_0-4-0-dev-8
     holochain_0-4-0-dev-9
     holochain_0-4-0-dev-10
+    holochain_0-4-0-dev-11
+    holochain_0-4-0-dev-12
 
 
     #
@@ -91,5 +93,7 @@ mkShell {
     hc_0-4-0-dev-8
     hc_0-4-0-dev-9
     hc_0-4-0-dev-10
+    hc_0-4-0-dev-11
+    hc_0-4-0-dev-12
   ];
 }
