@@ -10,7 +10,7 @@ self: super: {
   '';
 
   # Helper function to select the appropriate architecture and construct the config
-  selectArchConfig = { system, version, linux_x64, darwin_x64 ? null, darwin_aarch64 ? null, windows_x64 ? null }:
+  selectArchConfig = { system ? builtins.currentSystem, version, linux_x64, darwin_x64 ? null, darwin_aarch64 ? null, windows_x64 ? null }:
     let
       archMap = {
         "x86_64-linux" = { arch = "x86_64-unknown-linux-gnu"; sha256 = linux_x64; };
@@ -127,17 +127,15 @@ self: super: {
 
 
   # Define packages for each version
-  hc_0-4-0-dev-13 = let
-    archConfig = self.selectArchConfig {
-      system = builtins.currentSystem;
+  hc_0-4-0-dev-13 = super.callPackage ./hc/default.nix (
+    self.selectArchConfig {
       version = "0.4.0-dev.13";
       linux_x64 = "/OdBIq8hhePmnQ6FXbt4jD6+4Pm+KIfPHCfd1mgAF8s=";
       darwin_x64 = "iUcUdQak6hCyBzvH7cHvHxuVhs6b14KLQkNnaNfe6mE=";
       darwin_aarch64 = "0000000000000000000000000000000000000000000=";
       windows_x64 = "0000000000000000000000000000000000000000000=";
-    };
-  in super.callPackage ./hc/default.nix archConfig;
-
+    }
+  );
 
   hc_0-4-x = self.hc_0-4-0-dev-13;
   hc_0-4 = self.createSymlink self.hc_0-4-x "hc-0.4";
