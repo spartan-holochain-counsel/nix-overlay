@@ -9,6 +9,21 @@ self: super: {
     ln -fs ${pkg}/bin/${pkg.pname}-${pkg.version} $out/bin/${alias}
   '';
 
+  # Helper function to select the appropriate architecture and construct the config
+  selectArchConfig = { system, version, linux_x64, darwin_x64 ? null, darwin_aarch64 ? null, windows_x64 ? null }:
+    let
+      archMap = {
+        "x86_64-linux" = { arch = "x86_64-unknown-linux-gnu"; sha256 = linux_x64; };
+        "x86_64-darwin" = { arch = "x86_64-apple-darwin"; sha256 = darwin_x64; };
+        "aarch64-darwin" = { arch = "aarch64-apple-darwin"; sha256 = darwin_aarch64; };
+        "x86_64-mingw32" = { arch = "x86_64-pc-windows-msvc"; sha256 = windows_x64; };
+      };
+    in
+      if builtins.hasAttr system archMap
+      then archMap.${system} // { inherit version; }
+      else throw "Unsupported system: ${system}";
+
+
   holochain_0-1-8 = super.callPackage ./holochain/default.nix { version = "0.1.8"; sha256 = "HVJ6SItgOj2fkGAOsbzS5d/+4yau+xIyTxl/59Ela8s="; };
 
   holochain_0-1-x = self.holochain_0-1-8;
@@ -108,7 +123,21 @@ self: super: {
   hc_0-4-0-dev-10 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.10"; sha256 = "iFPxtUYPw3qw6DcQNd2kUPko2bWqKHqZe7eQvYkAukg="; };
   hc_0-4-0-dev-11 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.11"; sha256 = "7AWGvEYRA7MuEzXbCbxIY3HSDFJmxiq2wMUqoXDruaM="; };
   hc_0-4-0-dev-12 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.12"; sha256 = "iWrApgqni5S+tI9SpPxbIJw5EdIQrzX/xM+50jOk/4k="; };
-  hc_0-4-0-dev-13 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.13"; sha256 = "/OdBIq8hhePmnQ6FXbt4jD6+4Pm+KIfPHCfd1mgAF8s="; };
+  #hc_0-4-0-dev-13 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.13"; sha256 = "/OdBIq8hhePmnQ6FXbt4jD6+4Pm+KIfPHCfd1mgAF8s="; };
+
+
+  # Define packages for each version
+  hc_0-4-0-dev-13 = let
+    archConfig = self.selectArchConfig {
+      system = builtins.currentSystem;
+      version = "0.4.0-dev.13";
+      linux_x64 = "/OdBIq8hhePmnQ6FXbt4jD6+4Pm+KIfPHCfd1mgAF8s=";
+      darwin_x64 = "iUcUdQak6hCyBzvH7cHvHxuVhs6b14KLQkNnaNfe6mE=";
+      darwin_aarch64 = "0000000000000000000000000000000000000000000=";
+      windows_x64 = "0000000000000000000000000000000000000000000=";
+    };
+  in super.callPackage ./hc/default.nix archConfig;
+
 
   hc_0-4-x = self.hc_0-4-0-dev-13;
   hc_0-4 = self.createSymlink self.hc_0-4-x "hc-0.4";

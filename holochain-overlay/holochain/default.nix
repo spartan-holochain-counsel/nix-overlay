@@ -1,4 +1,4 @@
-{ pkgs ? import <nixpkgs> {}, version, sha256 }:
+{ pkgs ? import <nixpkgs> {}, version, sha256, arch ? "x86_64-unknown-linux-gnu" }:
 
 with pkgs;
 
@@ -7,7 +7,7 @@ stdenv.mkDerivation rec {
   inherit version;
 
   src = fetchurl {
-    url = "https://github.com/matthme/holochain-binaries/releases/download/holochain-binaries-${version}/holochain-v${version}-x86_64-unknown-linux-gnu";
+    url = "https://github.com/matthme/holochain-binaries/releases/download/holochain-binaries-${version}/holochain-v${version}-${arch}";
     inherit sha256;
   };
 
@@ -27,6 +27,6 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Holochain binary downloaded from GitHub releases";
     homepage = "https://github.com/spartan-holochain-counsel/nix-overlay";
-    platforms = lib.platforms.linux;
+    platforms = with lib.platforms; linux ++ darwin ++ windows;
   };
 }
