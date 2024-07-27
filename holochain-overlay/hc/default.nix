@@ -2,6 +2,16 @@
 
 with pkgs;
 
+let
+  splitComponents = str: builtins.filter (s: s != "") (builtins.split "-" str);
+  isSubset = set1: set2: builtins.all (x: builtins.elem x set2) set1;
+  isMatch = isSubset ( splitComponents system ) ( splitComponents arch );
+  warnMismatch =
+    if ! isMatch
+    then builtins.trace
+        "WARNING: Supplying hc version ${version} for ${arch} on a ${system} system; this may not work correctly"
+    else (x: x);
+in
 stdenv.mkDerivation rec {
   pname = "hc";
   inherit version;
@@ -17,7 +27,7 @@ stdenv.mkDerivation rec {
 
   buildPhase = "true"; # Skip the default buildPhase
 
-  installPhase = ''
+  installPhase = warnMismatch ''
     mkdir -p $out/bin
     cp $src $out/bin/hc-${version}
     chmod +x $out/bin/hc-${version}
