@@ -43,7 +43,7 @@ self: super: {
   holochain_0-3-1 = super.callPackage ./holochain/default.nix { version = "0.3.1"; sha256 = "AkNc8ex/a4Uo8jHXN3M8wFog+/wOPOJRIYkLVMIaHhs="; };
   holochain_0-3-2 = super.callPackage ./holochain/default.nix { version = "0.3.2"; sha256 = "syzrXdVmiqVqvVC1DZQF+rkxLHkTMmTpJz8DylTMyU8="; };
 
-  holochain_0-3-x = self.holochain_0-3-1;
+  holochain_0-3-x = self.holochain_0-3-2;
   holochain_0-3 = self.createSymlink self.holochain_0-3-x "holochain-0.3";
 
   holochain_0-4-0-dev-1 = super.callPackage ./holochain/default.nix { version = "0.4.0-dev.1"; sha256 = "hSu6oidXEMESIxiFvFcnSwI7rjk6iM0XhOS1UJdh7Sw="; };
@@ -62,7 +62,7 @@ self: super: {
   holochain_0-4-0-dev-14 = super.callPackage ./holochain/default.nix { version = "0.4.0-dev.14"; sha256 = "ckT0+aKOiGmgAlreS/cmMPu8pJyymiiybOwAgaZI/tI="; };
   holochain_0-4-0-dev-15 = super.callPackage ./holochain/default.nix { version = "0.4.0-dev.15"; sha256 = "f5Mf3D1ih5W6dWUX5oa5Mgwl8HE1cf2/ITpoDx437Ks="; };
 
-  holochain_0-4-x = self.holochain_0-4-0-dev-13;
+  holochain_0-4-x = self.holochain_0-4-0-dev-15;
   holochain_0-4 = self.createSymlink self.holochain_0-4-x "holochain-0.4";
 
   holochain_0-x = self.holochain_0-3-x;
@@ -96,7 +96,7 @@ self: super: {
   hc_0-3-1 = super.callPackage ./hc/default.nix { version = "0.3.1"; sha256 = "6zccpmpOBisxd3REzEfM58iZgiFZ3H5NvWdtYKrAC3k="; };
   hc_0-3-2 = super.callPackage ./hc/default.nix { version = "0.3.2"; sha256 = "dD5lKhHR0kPLNXLGl528Oc+4hBdPQWX8MmpMsmfDQs8="; };
 
-  hc_0-3-x = self.hc_0-3-1;
+  hc_0-3-x = self.hc_0-3-2;
   hc_0-3 = self.createSymlink self.hc_0-3-x "hc-0.3";
 
   hc_0-4-0-dev-0 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.0"; sha256 = "vQSeazkmySI4sSVy2EGi60LUtv1uyYdg3/TfsKVYei0="; };
@@ -116,7 +116,7 @@ self: super: {
   hc_0-4-0-dev-14 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.14"; sha256 = "1HlzhtFoU0MrVXnXgZbtvCoQp+oPE1c6yMPUCrliD5g="; };
   hc_0-4-0-dev-15 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.15"; sha256 = "YHLzk5Rr5NVL/Aoi+MqL8uA9wR9YQpoCa+htzzVfiZM="; };
 
-  hc_0-4-x = self.hc_0-4-0-dev-13;
+  hc_0-4-x = self.hc_0-4-0-dev-15;
   hc_0-4 = self.createSymlink self.hc_0-4-x "hc-0.4";
 
   hc_0-x = self.hc_0-3-x;
