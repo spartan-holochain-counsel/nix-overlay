@@ -40,6 +40,7 @@ mkShell {
     holochain_0-3-1-rc-1
     holochain_0-3-1-rc-2
     holochain_0-3-1
+    holochain_0-3-2
 
     holochain_0-4-0-dev-1
     holochain_0-4-0-dev-2
@@ -84,6 +85,7 @@ mkShell {
 
     hc_0-3-0-beta-dev-47
     hc_0-3-1
+    hc_0-3-2
 
     hc_0-4-0-dev-0
     hc_0-4-0-dev-1
