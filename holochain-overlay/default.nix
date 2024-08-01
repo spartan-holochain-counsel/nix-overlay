@@ -59,6 +59,7 @@ self: super: {
   holochain_0-4-0-dev-12 = super.callPackage ./holochain/default.nix { version = "0.4.0-dev.12"; sha256 = "jQtswjO7d1nzaexr09ygmKGscXj9IRFJqXFQgnqFqPc="; };
   holochain_0-4-0-dev-13 = super.callPackage ./holochain/default.nix { version = "0.4.0-dev.13"; sha256 = "Ub7Mj+XM50EYIWJonn3UD++dfkGUUssA8LxJTKuDbGs="; };
   holochain_0-4-0-dev-14 = super.callPackage ./holochain/default.nix { version = "0.4.0-dev.14"; sha256 = "ckT0+aKOiGmgAlreS/cmMPu8pJyymiiybOwAgaZI/tI="; };
+  holochain_0-4-0-dev-15 = super.callPackage ./holochain/default.nix { version = "0.4.0-dev.15"; sha256 = "f5Mf3D1ih5W6dWUX5oa5Mgwl8HE1cf2/ITpoDx437Ks="; };
 
   holochain_0-4-x = self.holochain_0-4-0-dev-13;
   holochain_0-4 = self.createSymlink self.holochain_0-4-x "holochain-0.4";
@@ -111,6 +112,7 @@ self: super: {
   hc_0-4-0-dev-12 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.12"; sha256 = "iWrApgqni5S+tI9SpPxbIJw5EdIQrzX/xM+50jOk/4k="; };
   hc_0-4-0-dev-13 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.13"; sha256 = "/OdBIq8hhePmnQ6FXbt4jD6+4Pm+KIfPHCfd1mgAF8s="; };
   hc_0-4-0-dev-14 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.14"; sha256 = "1HlzhtFoU0MrVXnXgZbtvCoQp+oPE1c6yMPUCrliD5g="; };
+  hc_0-4-0-dev-15 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.15"; sha256 = "YHLzk5Rr5NVL/Aoi+MqL8uA9wR9YQpoCa+htzzVfiZM="; };
 
   hc_0-4-x = self.hc_0-4-0-dev-13;
   hc_0-4 = self.createSymlink self.hc_0-4-x "hc-0.4";
