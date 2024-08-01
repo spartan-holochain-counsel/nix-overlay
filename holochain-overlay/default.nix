@@ -10,7 +10,7 @@ self: super: {
   '';
 
   # Helper function to select the appropriate architecture and construct the config
-  selectArchConfig = { system ? builtins.currentSystem, version, linux_x64, darwin_x64 ? null, darwin_aarch64 ? null, windows_x64 ? null }:
+  selectArchConfig = { system ? super.system, version, linux_x64, darwin_x64 ? null, darwin_aarch64 ? null, windows_x64 ? null }:
     let
       archMap = {
         "x86_64-linux" = { arch = "x86_64-unknown-linux-gnu"; sha256 = linux_x64; };
