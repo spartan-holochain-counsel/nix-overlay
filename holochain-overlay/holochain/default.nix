@@ -5,7 +5,9 @@ with pkgs;
 let
   splitComponents = str: builtins.filter (s: s != "") (builtins.split "-" str);
   isSubset = set1: set2: builtins.all (x: builtins.elem x set2) set1;
-  isMatch = isSubset ( splitComponents system ) ( splitComponents arch );
+  isMatch = isSubset
+    (splitComponents (builtins.replaceStrings ["mingw32"] ["windows"] system))
+    (splitComponents arch);
   warnMismatch =
     if ! isMatch
     then builtins.trace
