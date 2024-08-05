@@ -1,6 +1,39 @@
 self: super: {
   # 0000000000000000000000000000000000000000000=
 
+  eachSystem = f: builtins.concatMap (system: f system) [
+    "x86_64-linux"
+    "x86_64-windows"
+    "x86_64-darwin"
+    "aarch64-darwin"
+  ];
+
+  checkCompatibility = { version, arch, name }: let
+    # Function to split a string into components by hyphen and filter out empty strings
+    splitComponents = str: builtins.filter (s: s != "") (builtins.split "-" str);
+
+    # Ensure "set2" contains all items from "set1"
+    #
+    # Example:
+    #
+    #     system = "x86_64-linux"
+    #     arch = "x86_64-unknown-linux-gnu"
+    #
+    #     [ "x86_64", "linux" ] is subset of [ "x86_64", "unknown", "linux", "gnu" ]
+    isSubset = set1: set2: builtins.all (x: builtins.elem x set2) set1;
+
+    # Function to check if all elements of "system" are in "arch"
+    isMatch = isSubset
+      (splitComponents (builtins.replaceStrings ["mingw32"] ["windows"] super.system))
+      (splitComponents arch);
+  in
+    # If the system and arch do not match, display a warning message; otherwise, do nothing.  This
+    # warning helps inform the user of potential incompatibilities
+    if ! isMatch
+    then builtins.trace
+      "WARNING: Supplying ${name} version ${version} for ${arch} on a ${super.system} system; this may not work correctly"
+    else (x: x);
+
   # Helper function to create symbolic links
   createSymlink = pkg: alias: super.runCommand "symlink-${alias}" {} ''
     mkdir -p $out/bin

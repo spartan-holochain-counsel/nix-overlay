@@ -1,21 +1,13 @@
-{ pkgs ? import <nixpkgs> {}, version, sha256, arch ? "x86_64-unknown-linux-gnu" }:
+{ pkgs, version, sha256, arch ? "x86_64-unknown-linux-gnu" }:
 
 with pkgs;
 
 let
-  splitComponents = str: builtins.filter (s: s != "") (builtins.split "-" str);
-  isSubset = set1: set2: builtins.all (x: builtins.elem x set2) set1;
-  isMatch = isSubset
-    (splitComponents (builtins.replaceStrings ["mingw32"] ["windows"] system))
-    (splitComponents arch);
-  warnMismatch =
-    if ! isMatch
-    then builtins.trace
-        "WARNING: Supplying hc version ${version} for ${arch} on a ${system} system; this may not work correctly"
-    else (x: x);
+  name = "hc";
+  warnMismatch = checkCompatibility { inherit version arch name; };
 in
 stdenv.mkDerivation rec {
-  pname = "hc";
+  pname = name;
   inherit version;
 
   src = fetchurl {
