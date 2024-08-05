@@ -113,7 +113,7 @@ import (pkgs.fetchFromGitHub {
 ```
 
 
-#### Example `flake.nix`
+#### Example `flake.nix` (single-system)
 
 ```nix
 {
@@ -143,6 +143,37 @@ import (pkgs.fetchFromGitHub {
         };
       };
     };
+}
+```
+
+#### Example `flake.nix` (multi-system)
+
+```nix
+{
+  description = "Holochain Development Env";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  };
+
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = import ./pkgs.nix {
+          pkgs = nixpkgs.legacyPackages.${system};
+          inherit system;
+        };
+      in {
+        devShell = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            holochain
+            lair-keystore
+            hc
+            nodejs_22
+          ];
+        };
+      }
+    );
 }
 ```
 
