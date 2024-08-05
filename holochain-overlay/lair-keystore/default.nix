@@ -1,13 +1,17 @@
-{ pkgs ? import <nixpkgs> {}, version, sha256 }:
+{ pkgs, version, sha256, arch ? "x86_64-unknown-linux-gnu" }:
 
 with pkgs;
 
+let
+  name = "lair-keystore";
+  warnMismatch = checkCompatibility { inherit version arch name; };
+in
 stdenv.mkDerivation rec {
-  pname = "lair-keystore";
+  pname = name;
   inherit version;
 
   src = fetchurl {
-    url = "https://github.com/matthme/holochain-binaries/releases/download/lair-binaries-${version}/lair-keystore-v${version}-x86_64-unknown-linux-gnu";
+    url = "https://github.com/matthme/holochain-binaries/releases/download/lair-binaries-${version}/lair-keystore-v${version}-${arch}";
     inherit sha256;
   };
 
@@ -17,7 +21,7 @@ stdenv.mkDerivation rec {
 
   buildPhase = "true"; # Skip the default buildPhase
 
-  installPhase = ''
+  installPhase = warnMismatch ''
     mkdir -p $out/bin
     cp $src $out/bin/lair-keystore-${version}
     chmod +x $out/bin/lair-keystore-${version}
@@ -27,6 +31,6 @@ stdenv.mkDerivation rec {
   meta = {
     description = "Lair Keystore binary downloaded from GitHub releases";
     homepage = "https://github.com/spartan-holochain-counsel/nix-overlay";
-    platforms = lib.platforms.linux;
+    platforms = with lib.platforms; linux ++ darwin ++ windows;
   };
 }

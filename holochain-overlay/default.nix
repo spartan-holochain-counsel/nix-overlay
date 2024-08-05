@@ -1,6 +1,39 @@
 self: super: {
   # 0000000000000000000000000000000000000000000=
 
+  eachSystem = f: builtins.concatMap (system: f system) [
+    "x86_64-linux"
+    "x86_64-windows"
+    "x86_64-darwin"
+    "aarch64-darwin"
+  ];
+
+  checkCompatibility = { version, arch, name }: let
+    # Function to split a string into components by hyphen and filter out empty strings
+    splitComponents = str: builtins.filter (s: s != "") (builtins.split "-" str);
+
+    # Ensure "set2" contains all items from "set1"
+    #
+    # Example:
+    #
+    #     system = "x86_64-linux"
+    #     arch = "x86_64-unknown-linux-gnu"
+    #
+    #     [ "x86_64", "linux" ] is subset of [ "x86_64", "unknown", "linux", "gnu" ]
+    isSubset = set1: set2: builtins.all (x: builtins.elem x set2) set1;
+
+    # Function to check if all elements of "system" are in "arch"
+    isMatch = isSubset
+      (splitComponents (builtins.replaceStrings ["mingw32"] ["windows"] super.system))
+      (splitComponents arch);
+  in
+    # If the system and arch do not match, display a warning message; otherwise, do nothing.  This
+    # warning helps inform the user of potential incompatibilities
+    if ! isMatch
+    then builtins.trace
+      "WARNING: Supplying ${name} version ${version} for ${arch} on a ${super.system} system; this may not work correctly"
+    else (x: x);
+
   # Helper function to create symbolic links
   createSymlink = pkg: alias: super.runCommand "symlink-${alias}" {} ''
     mkdir -p $out/bin
@@ -8,6 +41,20 @@ self: super: {
     ln -s ${pkg}/bin/${pkg.pname}-${pkg.version} $out/bin/${pkg.pname}-${pkg.version}
     ln -fs ${pkg}/bin/${pkg.pname}-${pkg.version} $out/bin/${alias}
   '';
+
+  # Helper function to select the appropriate architecture and construct the config
+  selectArchConfig = { system ? super.system, version, linux_x64, darwin_x64 ? null, darwin_aarch64 ? null, windows_x64 ? null }:
+    let
+      archMap = {
+        "x86_64-linux" = { arch = "x86_64-unknown-linux-gnu"; sha256 = linux_x64; };
+        "x86_64-darwin" = { arch = "x86_64-apple-darwin"; sha256 = darwin_x64; };
+        "aarch64-darwin" = { arch = "aarch64-apple-darwin"; sha256 = darwin_aarch64; };
+        "x86_64-mingw32" = { arch = "x86_64-pc-windows-msvc"; sha256 = windows_x64; };
+      };
+    in
+      if builtins.hasAttr system archMap
+      then archMap.${system} // { inherit version; }
+      else throw "Unsupported system: ${system}";
 
   holochain_0-1-8 = super.callPackage ./holochain/default.nix { version = "0.1.8"; sha256 = "HVJ6SItgOj2fkGAOsbzS5d/+4yau+xIyTxl/59Ela8s="; };
 
@@ -58,9 +105,33 @@ self: super: {
   holochain_0-4-0-dev-10 = super.callPackage ./holochain/default.nix { version = "0.4.0-dev.10"; sha256 = "POl+Zu3QhI6LB3PN1bUVVKo1A0FiLSzCc8gX9Jwb/7M="; };
   holochain_0-4-0-dev-11 = super.callPackage ./holochain/default.nix { version = "0.4.0-dev.11"; sha256 = "ncS9Drru8qNcAt/KmW18CAnAiHYfwdcaiE2qAOseNIc="; };
   holochain_0-4-0-dev-12 = super.callPackage ./holochain/default.nix { version = "0.4.0-dev.12"; sha256 = "jQtswjO7d1nzaexr09ygmKGscXj9IRFJqXFQgnqFqPc="; };
-  holochain_0-4-0-dev-13 = super.callPackage ./holochain/default.nix { version = "0.4.0-dev.13"; sha256 = "Ub7Mj+XM50EYIWJonn3UD++dfkGUUssA8LxJTKuDbGs="; };
-  holochain_0-4-0-dev-14 = super.callPackage ./holochain/default.nix { version = "0.4.0-dev.14"; sha256 = "ckT0+aKOiGmgAlreS/cmMPu8pJyymiiybOwAgaZI/tI="; };
-  holochain_0-4-0-dev-15 = super.callPackage ./holochain/default.nix { version = "0.4.0-dev.15"; sha256 = "f5Mf3D1ih5W6dWUX5oa5Mgwl8HE1cf2/ITpoDx437Ks="; };
+  holochain_0-4-0-dev-13 = super.callPackage ./holochain/default.nix (
+    self.selectArchConfig {
+      version = "0.4.0-dev.13";
+      linux_x64 = "Ub7Mj+XM50EYIWJonn3UD++dfkGUUssA8LxJTKuDbGs=";
+      darwin_x64 = "Z5OmPR1/TXFW4NuRjGCEby4WMngW0ho/EdLXSwavs4I=";
+      darwin_aarch64 = "KCzCf+vqMdAWk4GylCIp8ot13xN+61grxsje3DqL53A=";
+      windows_x64 = "yeoJ40XqQ6oP8G9xKBNL13WGbc9sS9VpMCNk2rgAmcY=";
+    }
+  );
+  holochain_0-4-0-dev-14 = super.callPackage ./holochain/default.nix (
+    self.selectArchConfig {
+      version = "0.4.0-dev.14";
+      linux_x64 = "ckT0+aKOiGmgAlreS/cmMPu8pJyymiiybOwAgaZI/tI=";
+      darwin_x64 = "RafQ+SuQ8FpIqNpRcE0LFW9+RlQMXIbC8R0cYe3+j2Y=";
+      darwin_aarch64 = "8EXyGuFjS5kBycELDLpFIgbmcEOu2TDrz4738SLKJVM=";
+      windows_x64 = "c4Tdv/6iUrPlU7SxdxI65Op7w7rb4bLeZkKOv/ZaUZ4=";
+    }
+  );
+  holochain_0-4-0-dev-15 = super.callPackage ./holochain/default.nix (
+    self.selectArchConfig {
+      version = "0.4.0-dev.15";
+      linux_x64 = "f5Mf3D1ih5W6dWUX5oa5Mgwl8HE1cf2/ITpoDx437Ks=";
+      darwin_x64 = "5DMkJeB7AMGKi5whBmuL+wjAGr20lSxlaPY3ku+QGFE=";
+      darwin_aarch64 = "MhPMgkgFqi7f44BgRqNPV5+be3W7CdnduBdnnxN7YNw=";
+      windows_x64 = "C8Rmebd4J6ekH7uH3kUKxwADRAY/DhomQzxhcW7SbPw=";
+    }
+  );
 
   holochain_0-4-x = self.holochain_0-4-0-dev-15;
   holochain_0-4 = self.createSymlink self.holochain_0-4-x "holochain-0.4";
@@ -75,7 +146,15 @@ self: super: {
   lair-keystore_0-4-2 = super.callPackage ./lair-keystore/default.nix { version = "0.4.2"; sha256 = "Q4AvHOvW5800eFcj8Di+9CUflMBELl83BASEdrNLB0A="; };
   lair-keystore_0-4-3 = super.callPackage ./lair-keystore/default.nix { version = "0.4.3"; sha256 = "R1H4HA5LL9axFe/bFJ9hq2iX7BOOug2vdWqyKFbyGO8="; };
   lair-keystore_0-4-4 = super.callPackage ./lair-keystore/default.nix { version = "0.4.4"; sha256 = "KVx0P/KmxVag0fboriAzoBtgeEW8D0wzhZv4WTEHpCo="; };
-  lair-keystore_0-4-5 = super.callPackage ./lair-keystore/default.nix { version = "0.4.5"; sha256 = "Z7Wo0GV1/BTGKV/sBc0tzTON52oFHOrG3XsD6SHuF2I="; };
+  lair-keystore_0-4-5 = super.callPackage ./lair-keystore/default.nix (
+    self.selectArchConfig {
+      version = "0.4.5";
+      linux_x64 = "Z7Wo0GV1/BTGKV/sBc0tzTON52oFHOrG3XsD6SHuF2I=";
+      darwin_x64 = "YMgRBLuqN+aXSaf1OwedBkFNB0GKFRSjxnZQPOKGHEo=";
+      darwin_aarch64 = "9uQnVXJx0TqzK92GcvBAi4skgReECtxkyFjVWmrlZYM=";
+      windows_x64 = "d8tOUamBYEhSCjApN2AhRIOgo3KrVUrUlpVRZ+YAnJk=";
+    }
+  );
 
   lair-keystore_0-4-x = self.lair-keystore_0-4-5;
   lair-keystore_0-4 = self.createSymlink self.lair-keystore_0-4-x "lair-keystore-0.4";
@@ -112,9 +191,33 @@ self: super: {
   hc_0-4-0-dev-10 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.10"; sha256 = "iFPxtUYPw3qw6DcQNd2kUPko2bWqKHqZe7eQvYkAukg="; };
   hc_0-4-0-dev-11 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.11"; sha256 = "7AWGvEYRA7MuEzXbCbxIY3HSDFJmxiq2wMUqoXDruaM="; };
   hc_0-4-0-dev-12 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.12"; sha256 = "iWrApgqni5S+tI9SpPxbIJw5EdIQrzX/xM+50jOk/4k="; };
-  hc_0-4-0-dev-13 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.13"; sha256 = "/OdBIq8hhePmnQ6FXbt4jD6+4Pm+KIfPHCfd1mgAF8s="; };
-  hc_0-4-0-dev-14 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.14"; sha256 = "1HlzhtFoU0MrVXnXgZbtvCoQp+oPE1c6yMPUCrliD5g="; };
-  hc_0-4-0-dev-15 = super.callPackage ./hc/default.nix { version = "0.4.0-dev.15"; sha256 = "YHLzk5Rr5NVL/Aoi+MqL8uA9wR9YQpoCa+htzzVfiZM="; };
+  hc_0-4-0-dev-13 = super.callPackage ./hc/default.nix (
+    self.selectArchConfig {
+      version = "0.4.0-dev.13";
+      linux_x64 = "/OdBIq8hhePmnQ6FXbt4jD6+4Pm+KIfPHCfd1mgAF8s=";
+      darwin_x64 = "iUcUdQak6hCyBzvH7cHvHxuVhs6b14KLQkNnaNfe6mE=";
+      darwin_aarch64 = "gwzLxNimwM1pgG/+jetX6QLfZj0pKYPh3X636H0gB8w=";
+      windows_x64 = "d3RMBeNpkxKaGz0KTHxfrNmlyB1H0ZAeW4Li2U9nfcI=";
+    }
+  );
+  hc_0-4-0-dev-14 = super.callPackage ./hc/default.nix (
+    self.selectArchConfig {
+      version = "0.4.0-dev.14";
+      linux_x64 = "1HlzhtFoU0MrVXnXgZbtvCoQp+oPE1c6yMPUCrliD5g=";
+      darwin_x64 = "1PyX6nJlxQ7kT9QDNzNGkBI4Rf0wmXZF5RBUjgcGM4o=";
+      darwin_aarch64 = "bmmqphb5x04x/OR91yeONzQ6fMiRd2317AGuHpou1n0=";
+      windows_x64 = "FbN+4e8EGdXUdDtpameBN8iTKmyS6ajBx3ZTIBzsF+g=";
+    }
+  );
+  hc_0-4-0-dev-15 = super.callPackage ./hc/default.nix (
+    self.selectArchConfig {
+      version = "0.4.0-dev.15";
+      linux_x64 = "YHLzk5Rr5NVL/Aoi+MqL8uA9wR9YQpoCa+htzzVfiZM=";
+      darwin_x64 = "NURYLoNEqTXqDf69mF/vHsOXUXqGgJ0Hy2wDdWA3PZQ=";
+      darwin_aarch64 = "NOO8z4R/0uTBDcHOevczteruWg3SMzmHCK8etXXSGZI=";
+      windows_x64 = "h2k0mnrGPeho1RPR9Lm5Z9rBMqTPWEekVMKZ4gNICys=";
+    }
+  );
 
   hc_0-4-x = self.hc_0-4-0-dev-15;
   hc_0-4 = self.createSymlink self.hc_0-4-x "hc-0.4";
