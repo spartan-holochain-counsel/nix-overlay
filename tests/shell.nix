@@ -60,6 +60,8 @@ mkShell {
     holochain_0-4-0-dev-16
     holochain_0-4-0-dev-17
     holochain_0-4-0-dev-18
+    # holochain_0-4-0-dev-19 does not exist
+    holochain_0-4-0-dev-20
 
 
     #
@@ -68,11 +70,14 @@ mkShell {
     lair-keystore
     lair-keystore_0
     lair-keystore_0-4
+    lair-keystore_0-5
 
     lair-keystore_0-4-2
     lair-keystore_0-4-3
     lair-keystore_0-4-4
     lair-keystore_0-4-5
+
+    lair-keystore_0-5-0
 
 
     #
@@ -109,5 +114,7 @@ mkShell {
     hc_0-4-0-dev-16
     hc_0-4-0-dev-17
     hc_0-4-0-dev-18
+    hc_0-4-0-dev-19
+    hc_0-4-0-dev-20
   ];
 }
