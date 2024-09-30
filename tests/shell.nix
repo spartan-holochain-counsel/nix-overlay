@@ -62,6 +62,13 @@ mkShell {
     holochain_0-4-0-dev-18
     # holochain_0-4-0-dev-19 does not exist
     holochain_0-4-0-dev-20
+    # holochain_0-4-0-dev-21 missing linux binary
+    holochain_0-4-0-dev-22
+    holochain_0-4-0-dev-23
+    holochain_0-4-0-dev-24
+    holochain_0-4-0-dev-25
+    holochain_0-4-0-dev-26
+    holochain_0-4-0-dev-27
 
 
     #
@@ -78,6 +85,8 @@ mkShell {
     lair-keystore_0-4-5
 
     lair-keystore_0-5-0
+    lair-keystore_0-5-1
+    lair-keystore_0-5-2
 
 
     #
@@ -116,5 +125,12 @@ mkShell {
     hc_0-4-0-dev-18
     hc_0-4-0-dev-19
     hc_0-4-0-dev-20
+    hc_0-4-0-dev-21
+    hc_0-4-0-dev-22
+    hc_0-4-0-dev-23
+    hc_0-4-0-dev-24
+    hc_0-4-0-dev-25
+    hc_0-4-0-dev-26
+    hc_0-4-0-dev-27
   ];
 }
