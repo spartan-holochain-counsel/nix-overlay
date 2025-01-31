@@ -72,6 +72,10 @@ mkShell {
 
     # From "holochain"
     holochain_0-4-0
+    holochain_0-4-1
+
+    holochain_0-5-0-dev-10
+    holochain_0-5-0-dev-16
 
 
     #
@@ -141,5 +145,9 @@ mkShell {
 
     # From "holochain"
     hc_0-4-0
+    hc_0-4-1
+
+    hc_0-5-0-dev-10
+    hc_0-5-0-dev-16
   ];
 }
