@@ -308,6 +308,16 @@ self: super: {
       windows_x64 = "F6pI6/KHpzL5tYFXq1GtXtnAQuioJu3Ql3cMTplwwOM=";
     }
   );
+  holochain_0-4-2 = super.callPackage ./holochain/default.nix (
+    self.selectArchConfig {
+      version = "0.4.2";
+      linux_x64 = "5osMGwi3/kDdho2PUYqxr+4Wzti24MW5prvMvz08GnA=";
+      linux_aarch64 = "c+0eQM1cMlr1akxTyfSnzjbnJFd1NJ9YvxqvYdYN56w=";
+      darwin_x64 = "9uzl58IAYuzaXIGAIDGHI7SB1z4dj41bFlTyGq7A6xA=";
+      darwin_aarch64 = "5cNDaEMtQB2pqwuZrbKujx3bQiYw4/MakpzD0xvuNVc=";
+      windows_x64 = "yAd32/WcR8ztPzbj7Bqp0BM7mR1l1orW/8Jjq/HjmOU=";
+    }
+  );
   holochain_0-5-0-dev-10 = super.callPackage ./holochain/default.nix (
     self.selectArchConfig {
       version = "0.5.0-dev.10";  # Holochain release version, not holochain --version
@@ -608,6 +618,16 @@ self: super: {
       darwin_x64 = "BsT51WuadH3QIQyxCd3qcaeGx/so5/jGg9VmEBO6USo=";
       darwin_aarch64 = "TFAxJdiglS9/huaUVSz1qgdA32nN81vj44VOWwlSlbQ=";
       windows_x64 = "SAN2yi6PARfSc7rcrVASizE9O9lqIbvDMssvXA06I/0=";
+    }
+  );
+  hc_0-4-2 = super.callPackage ./hc/default.nix (
+    self.selectArchConfig {
+      version = "0.4.2";
+      linux_x64 = "7UZiW5uVwwufPbUaoTdm1FOxCtNRwayt4adDiymnWZ4=";
+      linux_aarch64 = "Cz5T/uTNHq28B50gza0j8Xt3O7/B8EZQ/acgXloFjVc=";
+      darwin_x64 = "XU5VQyI4PZzXgtXFEW+IhPBOtgWDxMRQXcFUgNfocL0=";
+      darwin_aarch64 = "k0XDxndpnKdls/LxTJ94bdFpSKGJ2NGZqOOrmwUrovw=";
+      windows_x64 = "T4zt4Ao0ARvmRkocIRXNcBupDzTWiAHlHusj/vtCaLc=";
     }
   );
   hc_0-5-0-dev-10 = super.callPackage ./hc/default.nix (
