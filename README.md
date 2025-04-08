@@ -103,6 +103,8 @@ Create a `flake.nix` file in your project that uses `./pkgs.nix` so that the hol
 
             # From nixpkgs
             nodejs_22
+            rustup
+            cargo
           ];
 
           shellHook = ''
