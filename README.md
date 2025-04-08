@@ -22,81 +22,45 @@ applications.
 To use this Nix overlay, you need to have Nix installed. If you don't have Nix installed, you can
 follow the instructions [here](https://nixos.org/download.html).
 
-Once you have Nix installed, you can use this overlay as your package source.
+These instructions will use the modern flakes-based approach.  For legacy `nix-shell` support, see [LEGACY_NIX_SHELL.md](LEGACY_NIX_SHELL.md).
 
-There are 3 example nix configurations
+### What are Nix flakes?
 
-1. `pkgs.nix` + `shell.nix`
-2. `pkgs.nix` + `default.nix`
-3. `pkgs.nix` + `flake.nix`
+Nix flakes are the modern approach to managing Nix packages.  They provide better dependency management by removing reliance on channels (`<nixpkgs>`) and explicitly tracking package sources.  Flakes does this by using:
+- Precise tracking of package sources
+- Locked dependency versions via `flake.lock`
+- Guaranteed reproducible environments across machines
 
-Configuration #1 and #2 are used by the `nix-shell` command while #3 is used by the `nix develop`
-command.
-
-
-#### Example `pkgs.nix`
+Example `flake.nix` with no overlay:
 
 ```nix
-{ pkgs ? import <nixpkgs> {} }:
+{
+  description = "Simple flake";
 
-import (pkgs.fetchFromGitHub {
-  owner = "spartan-holochain-counsel";
-  repo = "nix-overlay";
-  rev = "b12037ca0ac4fde1d4049ba40c6e375c5e156e9a";
-  sha256 = "Ou5Xs2r90f/+OsH3Y6mrnzeQ5aUNxLg1G1GGniK3f3o=";
-}) {}
-```
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  };
 
-or, a more condensed version using `fetchTarball`
-
-```nix
-import (fetchTarball {
-  url = "https://github.com/spartan-holochain-counsel/nix-overlay/archive/b12037ca0ac4fde1d4049ba40c6e375c5e156e9a.tar.gz";
-  sha256 = "Ou5Xs2r90f/+OsH3Y6mrnzeQ5aUNxLg1G1GGniK3f3o=";
-}) {}
-```
-
-#### Example `shell.nix`
-
-```nix
-{ pkgs ? import ./pkgs.nix {} }:
-
-with pkgs;
-
-mkShell {
-  buildInputs = [
-    holochain
-    lair-keystore
-    hc
-  ];
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachDefaultSystem (system: {
+      devShells.default =
+        let pkgs = nixpkgs.legacyPackages.${system};
+      in
+        pkgs.mkShell {
+          buildInputs = [
+            pkgs.nodejs_22
+          ];
+        };
+    });
 }
 ```
 
-#### Example `default.nix`
+To use this setup, run `nix develop` in your project directory.
 
-```nix
-{ pkgs ? import ./pkgs.nix {} }:
 
-with pkgs;
+## Adding This Overlay
 
-stdenv.mkDerivation {
-  name = "";
-  src = ./.;
-
-  nativeBuildInputs = [
-    holochain
-    lair-keystore
-    hc
-  ];
-}
-```
-
-### Flake Support
-
-Flakes are more strict and so we need to modify the previous `pkgs.nix` so that:
-
-- `<nixpkgs>` is not used
-- `system` is explicitly provided
+Create a `pkgs.nix` file in your project:
 
 ```nix
 { pkgs, system }:
@@ -104,49 +68,15 @@ Flakes are more strict and so we need to modify the previous `pkgs.nix` so that:
 import (pkgs.fetchFromGitHub {
   owner = "spartan-holochain-counsel";
   repo = "nix-overlay";
-  rev = "b12037ca0ac4fde1d4049ba40c6e375c5e156e9a";
-  sha256 = "Ou5Xs2r90f/+OsH3Y6mrnzeQ5aUNxLg1G1GGniK3f3o=";
+  rev = "513d98c24f95dd86b452a346b7d1c6e589eac9a8";
+  sha256 = "0RgYJW9lxb2Y3I1UFm8zW1MlAASFe0IrwoW7gLISyv0=";
 }) {
   inherit pkgs;
   inherit system;
 }
 ```
 
-
-#### Example `flake.nix` (single-system)
-
-```nix
-{
-  description = "Flake for Holochain development environment";
-
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-  };
-
-  outputs = { self, nixpkgs }:
-    let
-      system = "x86_64-linux";
-      pkgs = import ./pkgs.nix {
-        pkgs = nixpkgs.legacyPackages.${system};
-        inherit system;
-      };
-    in
-    {
-      devShells.${system} = {
-        default = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            holochain
-            lair-keystore
-            hc
-            nodejs_22
-          ];
-        };
-      };
-    };
-}
-```
-
-#### Example `flake.nix` (multi-system)
+Create a `flake.nix` file in your project that uses `./pkgs.nix` so that the holochain binaries are available:
 
 ```nix
 {
@@ -166,18 +96,59 @@ import (pkgs.fetchFromGitHub {
       in {
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
+            # From nix-overlay
             holochain
             lair-keystore
             hc
+
+            # From nixpkgs
             nodejs_22
           ];
+
+          shellHook = ''
+            export PS1="\[\e[1;32m\](flake-env)\[\e[0m\] \[\e[1;34m\]\u@\h:\w\[\e[0m\]$ "
+            export CARGO_HOME=$(pwd)/.cargo
+            export RUSTUP_HOME=$(pwd)/.rustup
+            rustup default stable
+            rustup target add wasm32-unknown-unknown
+          '';
         };
       }
     );
 }
 ```
 
+### Understanding the Shell Hook
 
+The shell hook in the flake configuration sets up your development environment with several important configurations:
+
+#### 1. Visual Environment Indicator
+```bash
+export PS1="\[\e[1;32m\](flake-env)\[\e[0m\] \[\e[1;34m\]\u@\h:\w\[\e[0m\]$ "
+```
+This sets a custom shell prompt that clearly shows when you're working inside the flake environment. It helps prevent confusion about which environment you're currently using.
+
+#### 2. Project-Local Rust Configuration
+```bash
+export CARGO_HOME=$(pwd)/.cargo
+export RUSTUP_HOME=$(pwd)/.rustup
+```
+These commands keep your Rust toolchain local to the project directory. This is important because:
+- It prevents conflicts between different projects that might need different Rust versions
+- Makes the project more portable and reproducible
+- Allows multiple developers to work with exactly the same Rust setup
+- Isolates project-specific Rust dependencies from your global installation
+
+#### 3. WASM-Specific Rust Setup
+```bash
+rustup default stable
+rustup target add wasm32-unknown-unknown
+```
+These commands configure Rust for WebAssembly compilation:
+- Sets up stable Rust as the default toolchain for reliable builds
+- Adds WebAssembly (WASM) support, which is essential because:
+  - Holochain DNAs are composed of Zomes, which are WASM modules
+  - The `wasm32-unknown-unknown` target enables direct compilation of Rust code to WASM
 
 ## Contributing
 
