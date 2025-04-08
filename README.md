@@ -150,6 +150,18 @@ These commands configure Rust for WebAssembly compilation:
   - Holochain DNAs are composed of Zomes, which are WASM modules
   - The `wasm32-unknown-unknown` target enables direct compilation of Rust code to WASM
 
+### Confirming the Setup
+
+After setting up the flake, and entering the development shell with `nix develop`, you can verify that the dependencies are working correctly by running:
+
+```bash
+holochain --version
+lair-keystore --version
+hc --version
+```
+
+This should display the version of each of the Holochain binaries that were installed by the flake.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md)
